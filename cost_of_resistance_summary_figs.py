@@ -1,3 +1,4 @@
+#%%
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
@@ -36,11 +37,14 @@ df_filt['doubling_time_change'] = doubling_time_change
 
 #%% Plot ic50 change vs growth rate change
 
-fig,ax = plt.subplots()
+fig,ax_list = plt.subplots(ncols=3,figsize=(10,3))
 
-ax.scatter(df_filt['ic50_change'], df_filt['doubling_time_change'])
-ax.set_xlabel('IC$_{50}$ ratio (resistant/sensitive)',fontsize=14)
-ax.set_ylabel('Doubling time ratio (resistant/sensitive)',fontsize=14)
+use_indx = df_filt['doubling_time_change'] > 1
+
+ax = ax_list[0]
+ax.scatter(df_filt['ic50_change'][use_indx], df_filt['doubling_time_change'][use_indx],color='k',alpha=0.7)
+ax.set_xlabel('IC$_{50}$ ratio \n(resistant/sensitive)',fontsize=14)
+ax.set_ylabel('Doubling time ratio \n(resistant/sensitive)',fontsize=14)
 ax.spines['right'].set_visible(False)
 ax.spines['top'].set_visible(False)
 
@@ -65,15 +69,18 @@ df_filt['doubling_time_ratio'] = doubling_time_ratio
 
 #%% histogram of doubling time ratio
 
-fig,ax = plt.subplots()
+# fig,ax = plt.subplots()
+ax = ax_list[1]
 
-hist = ax.hist(df_filt['doubling_time_ratio'],bins=20);
+use_indx = df_filt['doubling_time_ratio'] > 1
+
+hist = ax.hist(df_filt['doubling_time_ratio'][use_indx],bins=10,color='k',alpha=0.7);
 
 ax.spines['right'].set_visible(False)
 ax.spines['top'].set_visible(False)
 ax.tick_params(axis='both', which='major', labelsize=12)
 
-ax.set_xlabel('Doubling time ratio (resistant/sensitive)',fontsize=14)
+ax.set_xlabel('Doubling time ratio \n(resistant/sensitive)',fontsize=14)
 ax.set_ylabel('Count',fontsize=14)
 # %% now filter ic50 data only
 df_filt = df.copy()
@@ -88,17 +95,22 @@ df_filt['ic50_ratio'] = ic50_ratio
 
 #%% histogram of ic50 ratio
 
-fig,ax = plt.subplots()
+# fig,ax = plt.subplots()
+ax = ax_list[2]
 
 ic50_ratio_log = np.log10(np.array(ic50_ratio).astype(float))
 
-hist = ax.hist(ic50_ratio_log);
+doubling_time_ratio = df_filt['doubling_time_res']/df_filt['doubling_time_sens']
+use_indx = doubling_time_ratio > 1
+
+hist = ax.hist(ic50_ratio_log[use_indx],bins=10,color='k',alpha=0.7);
 
 ax.spines['right'].set_visible(False)
 ax.spines['top'].set_visible(False)
 ax.tick_params(axis='both', which='major', labelsize=12)
 
-ax.set_xlabel('IC$_{50}$ ratio (resistant/sensitive)',fontsize=14)
+ax.set_xlabel('IC$_{50}$ ratio \n(resistant/sensitive)',fontsize=14)
 ax.set_ylabel('Count',fontsize=14)
 # ax.set_xscale('log')
+fig.tight_layout()
 # %%
